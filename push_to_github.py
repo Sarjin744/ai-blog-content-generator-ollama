@@ -14,20 +14,19 @@ def push_repo(remote_url: str, branch: str = "main"):
     print(f"[*] Target Branch: {branch}")
 
     try:
-        repo = porcelain.open_repo_closing(".")
-        with repo:
-            # Check or set branch to main
-            ref_name = f"refs/heads/{branch}".encode()
-            head_commit = repo.head()
-            repo.refs[ref_name] = head_commit
+        from dulwich.repo import Repo
+        repo = Repo(".")
+        ref_name = f"refs/heads/{branch}".encode()
+        head_commit = repo.head()
+        repo.refs[ref_name] = head_commit
 
-            print("[*] Pushing commit to remote repository...")
-            porcelain.push(repo, remote_url, ref_name)
-            print("[✓] Repository successfully pushed to GitHub!")
-            return True
+        print("[*] Pushing commit to remote repository...")
+        porcelain.push(".", remote_url, ref_name)
+        print("[✓] Repository successfully pushed to GitHub!")
+        return True
     except Exception as e:
         print(f"[!] Push failed: {e}")
-        print("\nTip: For private repositories or HTTPS auth, provide your URL with a GitHub Personal Access Token (PAT):")
+        print("\nTip: For HTTPS authentication, provide your URL with a GitHub Personal Access Token (PAT):")
         print("  https://<YOUR_GITHUB_TOKEN>@github.com/<USERNAME>/<REPO_NAME>.git")
         return False
 
